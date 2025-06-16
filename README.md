@@ -1,8 +1,9 @@
 # ETL2-Pipeline
+End goal is to populate the pr_issue table.\
+Reads the file with issues and PRs linked and populates the pr_issue table (skills database).\
 
-Reads the file with issues and PRs linked and populates the pr_issue table (skills database)
-Takes in CSV files for issues, pull requests, and commits from a given repo on github.
-The programs will combine these CSV's and clean them, creating the output for that is fed into [IssueMapper](https://github.com/fabiojavamarcos/mapIssues2).
+Takes in CSV files for issues, pull requests, and commits from a given repo on github.\
+The programs will combine these CSV's and clean them, creating the output that is fed into [IssueMapper](https://github.com/fabiojavamarcos/mapIssues2).\
 Examples ran through in the programs are from [Jabref](https://github.com/JabRef/jabref). It is useful to compare with the source repo if you need a better understanding of the data.
 
 ## MergeDF
