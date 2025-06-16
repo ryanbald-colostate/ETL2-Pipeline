@@ -2,6 +2,9 @@
 
 reads the file with issues and PRs linked and populates the pr_issue table (skills database)
 
+## MergeDF
+
+## updated_procIssues
 arguments:
 
 postgres - username
