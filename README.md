@@ -2,7 +2,7 @@
 End goal is to populate the pr_issue table.
 
 Takes in CSV files for issues, pull requests, and commits from a given repo on github.\
-The programs will combine these CSV's and clean them, creating the output that is fed into [IssueMapper](https://github.com/fabiojavamarcos/mapIssues2).\
+The programs will combine these CSV's and link PRs to issues, creating the output that is fed into [IssueMapper](https://github.com/fabiojavamarcos/mapIssues2).\
 Examples ran through in the programs are from [Jabref](https://github.com/JabRef/jabref). It is useful to compare with the source repo if you need a better understanding of the data.
 
 ## MergeDF
@@ -25,7 +25,7 @@ Steps:
 - Create dataMerged_Final_only_closed.csv
 
 ## updated_procIssues
-Input: final merged csv from MergeDF. Please rename to begin with 'project_' i.e. jabref_example.csv.
+Input: final merged csv from MergeDF. Please rename to begin with 'project_' i.e. jabref_example.csv.\
 Output: CSV file with PRs linked to issues they solve.
 
 When running the cell that searches the PRs for issues, it may be best to comment out all print statements, or at least the issue body print statement. If running on jupyter, it may be necesary to increase the I/O rate. To do this, open Anaconda Powershell Promt and input 'jupyter notebook --NotebookApp.iopub_data_rate_limit=1.0e10'. This will open a new port for jupyter notebook and use the Anaconda Powershell Prompt as the kernel. Also make sure the cell outputs have a scroll bar by clicking Cell > Current Output/All Output > Toggle Scrolling, so that the print statements are contained.
