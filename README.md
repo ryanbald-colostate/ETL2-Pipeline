@@ -10,7 +10,9 @@ Issues definition: We will treat issue numbers as containing all issues and pull
 Input: CSVs for Issues, Pull Requests, and Commits.\
 Output: dataMerged_Final_only_closed.csv
 
-Steps:
+<details>
+<summary>Steps:</summary>
+  
 - Clean the data
   - Remove multiple commits for a single issue number (commits are only on prs). Ideally would be done by closed date, but that would be difficult so they are just done by last and assume they are already in order by closed date.
   - If issues data does not contain pull requests, create a copy of prs to later combine with issues.
@@ -23,6 +25,7 @@ Steps:
   - Use the indicator (_merge) to assign values for isPR.
   - Remove any pr closed dates which are NaN.
 - Create dataMerged_Final_only_closed.csv
+</details>
 
 ## updated_procIssues
 Input: final merged csv from MergeDF. Please rename to begin with 'project_' i.e. jabref_example.csv.\
@@ -30,7 +33,9 @@ Output: CSV file with PRs linked to issues they solve.
 
 When running the cell that searches the PRs for issues, it may be best to comment out all print statements, or at least the issue body print statement. If running on jupyter, it may be necesary to increase the I/O rate. To do this, open Anaconda Powershell Promt and input 'jupyter notebook --NotebookApp.iopub_data_rate_limit=1.0e10'. This will open a new port for jupyter notebook and use the Anaconda Powershell Prompt as the kernel. Also make sure the cell outputs have a scroll bar by clicking Cell > Current Output/All Output > Toggle Scrolling, so that the print statements are contained.
 
-Steps:
+<details>
+<summary>Steps:</summary>
+  
 - Setup input and outputs
 - Search the PRs for issues
   - Will search for an octothorpe ('#').
@@ -42,3 +47,4 @@ Steps:
 - Merge input with the linked data
   - Clean and remove some columns
 - Output the merged dataframes as two files (one has NaN replaced as 'NA')
+</details>
