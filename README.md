@@ -10,6 +10,8 @@ Issues definition: We will treat issue numbers as containing all issues and pull
 Input: CSVs for Issues, Pull Requests, and Commits.\
 Output: dataMerged_Final_only_closed.csv
 
+If the example input files are needed, the Jabref ones can be found from the Mining Project [here](https://drive.google.com/drive/folders/1cv2OXUnEHMYwR7_E7dQkS7OxGkwm2qNw), since they are too large to add to the repo.
+
 <details>
 <summary>Steps:</summary>
   
