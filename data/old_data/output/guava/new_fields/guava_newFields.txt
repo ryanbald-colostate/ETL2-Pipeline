@@ -1,0 +1,1703 @@
+PR, Issue, Issue_Title_Linked, Issue_Body_Linked, Issue_Comment_Linked, isTrain
+3099,3090,Fix broken badge in Readme,maven-badges.herokuapp.com is frequently (and currently) broken.,Thanks.
+
+The _new_ badge just showed up as broken for me, but it worked after a refresh. Hopefully it will prove more reliable over time. =||= 🤦‍♂️  haha yeah I noticed that too. Seems fine now…
+
+I think it should be at least as reliable as before, since `maven-badges.herokuapp.com` also depends on `shields.io` =||= ,0
+3117,3107,Fix toString of NonSerializableMemoizingSupplier,Delegate is set to null once the value has been computed, but is still referenced by the toString method. When it's null, use the value instead.,First solution I thought of =||= ,0
+3146,3145,Put type annotations on types, not declarations,To improve readability, the Java Language Specification recommends that type annotations are written "immediately before the type to which they apply" (https://docs.oracle.com/javase/specs/jls/se8/html/jls-9.html#jls-9.7.4).  This pull request makes Guava conform to that style guideline.,nan,0
+3158,3154,Use api instead of compile for Android,nan,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here (e.g. `I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+<!-- need_sender_cla --> =||= The direct analogous is `api`. `implementation` is merely an optimization that should be opted into. =||= I signed it! =||= CLAs look good, thanks!
+
+<!-- ok --> =||= @JakeWharton I thought it was the other way round? Isn't `implementation` the same as `compile`, with `api` being the optimisation? :/ =||= @JakeWharton Wait, I'm challenging myself now. I realise that I'm not 100% clear on the difference between `api` and `implementation`, so never mind. :) =||= No. Compile transitively exposes the dependency on the classpath of
+downstream modules which is the same as api. Implementation hides the
+dependency. Of course Gradle doesn't enforce or validate any of this so
+it's a giant footgun unless you know what you're doing.
+
+On Wed, May 23, 2018 at 5:06 PM Jonathan Bluett-Duncan <
+notifications@github.com> wrote:
+
+> @JakeWharton <https://github.com/JakeWharton> I thought it was the other
+> way round? Isn't implementation the same as compile, with api being the
+> optimisation? :/
+>
+> —
+> You are receiving this because you were mentioned.
+>
+>
+> Reply to this email directly, view it on GitHub
+> <https://github.com/google/guava/pull/3154#issuecomment-391496310>, or mute
+> the thread
+> <https://github.com/notifications/unsubscribe-auth/AAEEEQr2oPYUNU7S_Elfe1CRqzOecLqzks5t1c9OgaJpZM4ULLig>
+> .
+>
+ =||= `api` it is then. =||= (Found https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_separation to back up Jake.) =||= Hmm, so should we change the JRE one to `api`, as well? It sounds like `compile` may be deprecated. =||= I believe 'api' only exists for JRE projects if you're using the
+'java-library' plugin. If you're using the regular 'java' plugin you only
+get 'compile' and 'implementation' (the idea being you're a leaf node and
+don't have anywhere to expose dependencies to).
+
+On Wed, May 23, 2018 at 5:21 PM Chris Povirk <notifications@github.com>
+wrote:
+
+> Hmm, so should we change the JRE one to api, as well? It sounds like
+> compile may be deprecated.
+>
+> —
+> You are receiving this because you were mentioned.
+> Reply to this email directly, view it on GitHub
+> <https://github.com/google/guava/pull/3154#issuecomment-391500545>, or mute
+> the thread
+> <https://github.com/notifications/unsubscribe-auth/AAEEEdtfVy2mpf-Lvk32inHC4veUluBBks5t1dLdgaJpZM4ULLig>
+> .
+>
+ =||= @cpovirk `compile` is indeed deprecated. :) =||= Huh. So is the idea that Android projects are more likely to use the java-library plugin? If anything, I might have naively guessed they were _less_ likely :) Is it just that the default Android build setup suggests java-library or something? =||= Android projects use neither. API and implementation are available for all
+Android plugins for about a year now. The reason these PRs are sweeping the
+web is that they now wan when you use compile.
+
+On Wed, May 23, 2018, 5:25 PM Chris Povirk <notifications@github.com> wrote:
+
+> Huh. So is the idea that Android projects are more likely to use the
+> java-library plugin? If anything, I might have naively guessed they were
+> *less* likely :) Is it just that the default Android build setup suggests
+> java-library or something?
+>
+> —
+> You are receiving this because you were mentioned.
+> Reply to this email directly, view it on GitHub
+> <https://github.com/google/guava/pull/3154#issuecomment-391501497>, or mute
+> the thread
+> <https://github.com/notifications/unsubscribe-auth/AAEEEcpsROIWL_DcsNPdWgCua0QkTdbQks5t1dO6gaJpZM4ULLig>
+> .
+>
+ =||= Ah! Thanks. =||= Hmm. It sounds to me that `implementation` is the most sensible default, and `api` should be used only if the `java-library` plugin is imported _and_ the given project wants to expose Guava types to its users. Is my understanding correct @JakeWharton? =||= Your understanding is correct because you understand the implications.
+Anyone who needs to look at the README to figure out how to add Guava
+beyond maybe just copy/pasting the coordinates will not have that
+understanding.
+
+On Wed, May 23, 2018 at 5:35 PM Jonathan Bluett-Duncan <
+notifications@github.com> wrote:
+
+> Hmm. It sounds to me that implementation is the most sensible default,
+> and api should be used only if the java-library plugin is imported *and*
+> the given project wants to expose Guava types to its users. Is my
+> understanding correct @JakeWharton <https://github.com/JakeWharton>?
+>
+> —
+> You are receiving this because you were mentioned.
+> Reply to this email directly, view it on GitHub
+> <https://github.com/google/guava/pull/3154#issuecomment-391504285>, or mute
+> the thread
+> <https://github.com/notifications/unsubscribe-auth/AAEEEQZJ1WltcLH-FZJ78-iTVPVWmCWeks5t1dYogaJpZM4ULLig>
+> .
+>
+ =||= @JakeWharton Cool! So you're suggesting `api` here because it's the most liberal option and most equivalent to the older `compile`, am I right? =||= (Even for people who don't expose Guava in their APIs, I'd be a little nervous about excluding transitive dependencies from the classpath, given problems with static analyzers and perhaps annotation processors discussed in #2824 and #2721. (There could also be problems if people use Guava annotations but don't consider that "exposing an API," but that seems less likely.) I suppose that those problems are relatively unlikely to affect people, though.) =||= Anyway, I do like the idea of suggesting the thing that is more likely to work (even if it's slower in some cases -- and I suspect only marginally so, since Guava isn't going to be changing between one build and the next). It is a little sad that this exports Guava to downstream targets, but that seems like the lesser evil (and no worse than what people see today).
+
+One final thought: We _could_ decide to give instructions for each of...
+
+- Java 8+
+- Java 7
+- Android
+
+...where the Java 7 instructions look like the _current_ Android instructions and the Android instructions look like your new ones. But I'm not sure that's worth the potential confusion. =||= @cpovirk I think it's worth at least changing the remaining `compile` instruction for "guava-jre" to `api`, so that the Gradle installation instructions are consistent. :) =||= @jbduncan, @JakeWharton said above:
+
+> I believe 'api' only exists for JRE projects if you're using the
+> 'java-library' plugin. If you're using the regular 'java' plugin you only
+> get 'compile' and 'implementation' (the idea being you're a leaf node and
+> don't have anywhere to expose dependencies to).
+
+So I worry that `api` won't exist for some people, and they'll be confused.
+
+Does Gradle warn about `compile` in JRE projects like it does in Android projects? =||= @cpovirk Good point about @JakeWharton's comment!
+
+Gradle does warn about `compile` in JRE projects too. :(
+
+Taking all this into consideration, I think the best advice to give Gradle users is something like the following:
+
+> To add a dependency using Gradle:
+>
+> ```gradle
+> // For Java applications or Java libraries which use Guava internally:
+> implementation 'com.google.guava:guava:25.1-jre'
+> // Or, for Java libraries which use the "java-library" plugin and expose Guava types to users
+> api 'com.google.guava:guava:25.1-jre'
+> // Or, for Android applications & libraries which use Guava internally:
+> implementation 'com.google.guava:guava:25.1-android'
+> // Or, for Android libraries which use the "java-library" plugin and expose Guava types to users
+> api 'com.google.guava:guava:25.1-android'
+> ```
+
+But having said this, the example advice I give above is quite verbose. I wonder if there's a better way of presenting it to Gradle&Guava users... =||= ,0
+3170,3161,fix a grammar mistake,fix a grammar mistake,We found a Contributor License Agreement for you (the sender of this pull request), but were unable to find agreements for all the commit author(s) or Co-authors.  If you authored these, maybe you used a different email address in the git commits than was used to sign the CLA ([login here](https://cla.developers.google.com/) to double check)?  If these were authored by someone else, then they will need to sign a CLA as well, and confirm that they're okay with these being contributed to Google.
+In order to pass this check, please resolve this problem and have the pull request author add another comment and the bot will run again. If the bot doesn't comment, it means it doesn't think anything has changed.
+
+<!-- need_author_cla --> =||= @AYWWWWW To make sure that your commit is signed with the email address you use for logging into GitHub, try following [these instructions](https://help.github.com/articles/setting-your-commit-email-address-in-git/) and then running `git commit --amend --reset-author` before force-pushing your "fix a grammar mistake" commit again. :) =||= CLAs look good, thanks!
+
+<!-- ok --> =||= @jbduncan I googled and solved it . Thanks anyway =||= @AYWWWWW Cool, glad you managed to find your own way of solving it. :) =||= ,0
+3393,3356,Remove unused imports and warnings,* Remove unused imports.
+* Remove suppress warning annotations where not applicable and/or update suppression types,@liach Thanks, added similar changes to android as well =||= looks good (imo this has a big chance of merging as it's a bugfix) =||= Not sure what we're doing with `serial` warnings nowadays, but I'll import the rest of this. Thanks. =||= ,0
+3393,146,Filler for Non-Existent Issue,Filler for non-existent Google Code issue 146.
+
+_This issue only exists to ensure that GitHub issues have the same IDs they had on Google Code. Please ignore it._,nan,0
+3393,3385,Document the JDK 9+ alternative to `Maps#immutableEntry`,I think this suggestion is worthwhile for two reasons:
+- The JDK 9+ alternative is null-hostile, fully in line with Guava's philosophy. (In fact, my colleagues and I were surprised to learn that `Maps.immutableEntry` allows nulls.)
+- The excellent arguments in favour of `Immutable*` types put forth in #2969 do not hold here, since `Maps.immutableEntry` does not have a special return type that communicates its immutability.,(we're merging this one in a sec, thank you for it!) =||= ,0
+3441,3439,Upgrade error_prone,to sync with the version protobuf is now using,Thanks. Would going all the way to 2.3.3 be worse for your dependency-agreement efforts? =||= For weird and possibly arbitrary reasons, it's not quite as problematic if Guava jumps ahead of the pack; but it's still better if everyone can agree. I picked 2.3.2 only because protobuf already shipped with that version. I am thinking about how we might get some approximation of ONE_VERSION_ONLY on Github, but it's tricky.  =||= ,0
+3455,3398,Fixed some links,Updated invalid links where I could find an alternative, removed others,nan,0
+3463,3448,Add java.util.UUID to ArbitraryInstances,I hope this counts as a trivial change. This adds `java.util.UUID` to `ArbitratyInstances` - I have recently been working on a project where we used `UUID` and `NullPointerTester` and we've often had to set a default manually, this should avoid that.,The build failure seems to be a problem with the build/travis rather than this change (it happens with other PRs too), but happy to make changes if that's not the case. =||= ,0
+3495,3485,Clarify behavior of `ImmutableList#copyOf` for null argument.,nan,Afaik this is the behavior of all ImmutableCollection types. The class javadoc on ImmutableList explicitly refers to the ImmutableCollection which mentions this at the top. So these changes don‘t seem necessary. =||= The factories are tested by other automated null tests, so let's not add more tests.
+
+The existing doc is trying to say that the methods reject null elements, but it's saying it poorly, so thanks for raising this. How about this...?
+
+```
+@throws NullPointerException if {@code elements} contains a null element
+```
+
+That skips mentioning that `elements` itself might be `null`, but we always skip that, preferring to annotate the parameters that _can_ be `null` with `@Nullable`. (Otherwise, nearly all of our methods would have `@throws NullPointerException if x, y, or z is null`.) =||= ,0
+3519,3500,Fix typo in 'stoppingCount' variable name,nan,nan,0
+3519,3497,Upgrade animal sniffer version to 1.18,Version [1.18](https://github.com/mojohaus/animal-sniffer/milestone/5?closed=1) resolves a JDK8 compatibility issue, resource leak and ends support for JDK 7,Oops, forgot about the android JDK 7 compilation. Should I remove the upgrade for Android or close PR? =||= The JDK 7 failure appears to be a case in which Animal Sniffer is catching a real problem (implicit use of `ReflectiveOperationException`) that it was missing before. That's interesting because I've seen Animal Sniffer catch this problem in the past -- though maybe it was in a different project that was using a newer version?
+
+I'll take care of the fix. =||= Oh, wait: I think what we saw was that Animal Sniffer caught the problem _if a method was called on the `ReflectiveOperationException`, which is the only scenario in which we'd seen it cause problems in practice. But we reasoned that other references to `ReflectiveOperationException` could cause problems (maybe for debugging or something) that we just hadn't seen yet, so it's nice that Animal Sniffer detects them now. =||= ,0
+3560,1973,Javadoc of HashBiMap#containsValue #inverse,The inherited doc should be overridden and mentioned that containsValue works in O(1) time in contrast to O(N) with a normal HashMap.
+
+The javadoc for #inverse should mention that it always returns the same Inverse instance and thus saving the Inverse as a separate instance variable is not mandatory to reduce overhead.,I'll put this on my list, thanks.
+
+On Fri, Feb 13, 2015 at 5:05 AM, Louis-Cyphre notifications@github.com
+wrote:
+
+> The inherited doc should be overridden and mentioned that containsValue
+> works in O(1) time in contrast to O(N) with a normal HashMap.
+> 
+> The javadoc for #inverse should mention that it always returns the same
+> Inverse instance and thus saving the Inverse as a separate instance
+> variable is not mandatory to reduce overhead.
+> 
+> —
+> Reply to this email directly or view it on GitHub
+> https://github.com/google/guava/issues/1973.
+
+## 
+
+Kevin Bourrillion | Java Librarian | Google, Inc. | kevinb@google.com
+ =||= Is this issue approved? =||= ,0
+3579,3577,simply code RP,nan,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3577) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3577) for more info**.
+
+<!-- ok --> =||= Thanks. We mostly avoid lambdas because we have a Java 7 backport, and we want to minimize diffs between the mainline and the backport. I'll get the `while` change merged. =||= @cpovirk Ok, I have received your messag =||= ,0
+3618,1661,Would like implementation comments explaining CharMatcher.WHITESPACE_MULTIPLIER,_[Original issue](https://code.google.com/p/guava-libraries/issues/detail?id=1661) created by **magiciankid** on 2014-02-09 at 07:37 AM_
+
+---
+
+there is a magic number in the CharaMatcher : WHITESPACE_MULTIPLIER = 1682554634
+
+wanntted a testcase or formula get this value , at least need a javadoc to comment it  ,_[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c2) posted by **magiciankid** on 2014-02-10 at 06:59 AM_
+
+---
+
+etc:
+IntMath.gcd  documented http://en.wikipedia.org/wiki/Binary_GCD_algorithm
+javadoc of Collections2.permutations notes it describe in TAOCP
+
+these methods were well documented
+ =||= _[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c3) posted by **kevinb@google.com** on 2014-02-10 at 04:58 PM_
+
+---
+
+Hm; I thought our Type- categories were complete enough, but we've never had a feature request for an implementation comment before.
+
+As an internal implementation detail I'd expect this to be very low priority. Is there any particular reason you need this information?
+
+---
+
+**Status:** `Research`
+**Labels:** -`Type-Addition`, `Type-Other`
+ =||= _[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c5) posted by **magiciankid** on 2014-02-11 at 01:02 AM_
+
+---
+
+Guava is a  brilliant libraries . so many wizrds in it .  so i start off Deliberate practice with guava line by line .  
+implementation details helps mastering skill  .   
+
+CharMatcher.WHITESPACE's makes me doubted:  why WHITESPACE_MULTIPLIER is that value ? why change sequence of  WHITESPACE_TABLE  can't get MULTIPLIER (http://goo.gl/AGdkCu) .  can't find any information to understand it  by myself , may be this problem will douted other people 
+
+that's all reason
+ =||= _[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c6) posted by **magiciankid** on 2014-02-11 at 02:35 AM_
+
+---
+
+at this version (http://goo.gl/0YmP0L) documented very well  , the latest change was submit by "Colin Decker"
+ =||= _[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c7) posted by **lowasser@google.com** on 2014-02-18 at 07:21 PM_
+
+---
+
+We have a WhitespaceMatcherGenerator class that we could open-source; the main issue is that it depends on icu4j, which would be a new dependency for tests, and we may or may not be okay with adding that dependency.
+ =||= _[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1661#c8) posted by **magiciankid** on 2014-02-19 at 03:29 AM_
+
+---
+
+hmm , how about put it in wiki or comment it in someplace  , anticipate WhitespaceMatcherGenerator . 
+ =||= I just came across this and had the same confusion. Unexplained magic numbers are confusing. You don't need formal comments, but a brief explanation would demystify the code. Something like this would suffice:
+
+// TABLE is a precomputed hashset of whitespace characters. MULTIPLIER serves as a hash function
+// whose key property is that it maps 25 characters into the 32-slot table without collision.
+ =||= Fix mirroring out soon. =||= ,0
+3629,3628,Update errorprone to 2.3.3,nan,nan,0
+3635,3210,Quantiles.ScaleAndIndexes#computeInPlace throws an unexpected ArrayIndexOutOfBoundsException if the array indexes is empty,In `Quantiles.ScaleAndIndexes#computeInPlace`, if the array `indexes` of `Quantiles.ScaleAndIndexes` is empty, an unexpected `ArrayIndexOutOfBoundsException` is thrown.
+The problem is if the last argument(`int[] indexes`) of `Quantiles.ScaleAndIndexes` constructor is length of 0, `computeInPlace` passes an invalid negative value as the third argument to the private method `selectAllInPlace` and causes the error. 
+
+To reproduce, run this code:
+```java
+import com.google.common.math.Quantiles;
+import java.util.Map;
+
+public class EmptyIndexes {
+   public static void main(String args[]) {
+       int[] empty = {};
+       int scale = 10;
+       int[] dataset= {0, 1, 2, 3, 4, 5};
+
+       Quantiles.ScaleAndIndexes sai = Quantiles.scale(scale).indexes(empty);
+       Map<Integer, Double> map = sai.computeInPlace(datatset_double);
+   }
+}
+```
+
+The program throws `ArrayIndexOutOfBoundsException`.
+This is an unfriendly error that can be easily fixed by using `checkArgument()` in constructor of `Quantiles.ScaleAndIndexes`. ,Link to proposed fix: [PR #3211](https://github.com/google/guava/pull/3211) =||= Thanks for this, @NhatDinh , I guess we missed this error case. =||= ,0
+3635,3211,Check the array indexes in Quantiles.ScaleAndIndexes is non empty,Fix [Issue #3210 ](https://github.com/google/guava/issues/3210),
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here (e.g. `I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+<!-- need_sender_cla --> =||= I signed it! =||= CLAs look good, thanks!
+
+<!-- ok --> =||= ,0
+3635,3580,Simplify some code,Remove some redundant 'if' statement.Besides, I use .toArray(new MyClass[0])  replace .toArray(new MyClass[myList.size()]) for improving the  efficiency  of the code.
+https://stackoverflow.com/questions/174093/toarraynew-myclass0-or-toarraynew-myclassmylist-size,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3580) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3580) for more info**.
+
+<!-- ok --> =||= -1 on the LocalCache changes, just as commented in PR #3492 this fixes what is presumably reported by an IDE at the expense of readability for no real reason.  =||= @ljacqu oh,sorry. I prefer the version that I commit because I would do the same thing in my daily coding.I can also understand that different projects have different coding styles. Do you mean that all the changes of 'if' statement is unnecessary? If you think so, I would revert them into the master version! =||= @ljacqu  I think that 'sum == 0' needs to be preserved because 'sum == 0' itself has the meaning of isEmpty. Positive thinking is more conducive to people's understanding than negative thinking.If you do not agree with that. I can also revert other 'if' statement to the master version.
+Look forward to your reply. =||= Sorry if there was any misunderstanding, I‘m not in any way affiliated/involved with Guava – I just posted a comment as an individual passing by :) =||= @ljacqu  That’s all right.I am very glad that you can reply to this pr.Thanks for your suggestion =||= ,0
+3635,3382,Document the JDK 9+ alternative to `Iterators#forEnumeration`,- Copied the phrasing from the various `Streams.stream(Optional*)` methods.
+- Didn't update the documentation in the Android code base. (Which also mirrors the approach taken for the `Streams.stream(Optional*)` methods.)
+- Not completely sure whether the `UnmodifiableIterator`/`Iterator` distinction is worth pointing out.,The JDK 11 build failures are unrelated to this change. =||= ,0
+3635,2677,Add a MIME type MPEG-DASH (mpd files),This format is becoming a thing. I couldn't find it in Guava's media types.,Thanks for your pull request.  It looks like this may be your first contribution to a Google open source project. Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed, please reply here (e.g. `I signed it!`) and we'll verify.  Thanks.
+
+---
+
+- If you've already signed a CLA, it's possible we don't have your GitHub username or you're using a different email address.  Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+- If you signed the CLA as a corporation, please let us know the company's name.
+
+<!-- need_sender_cla --> =||= I signed it! =||= CLAs look good, thanks!
+
+<!-- ok --> =||= ,0
+3636,3453,Add testlib readme,nan,nan,0
+3637,3633,Code improvement `if` statement instead of a for `statement` to a single item,Code improvement, using `if` statement instead of a for `statement` to a single item.
+
+I also found some classes with empty methods that are not being used by the project, is this correct? If these methods can be removed, I'd like to open a pr for this.
+
+ex: `AllEqualOrdering_CustomFieldSerializer.deserialize(SerializationStreamReader reader, AllEqualOrdering instance)`,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3633) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3633) for more info**.
+
+<!-- ok --> =||= Thanks.
+
+The `CustomFieldSerializer` methods are used through reflection by [GWT](http://www.gwtproject.org) during its GWT-RPC serialization. (We're actually removing support for that at the beginning of next year, but we'll take care of it then.) =||= ,0
+3654,3652,switch to an internal annotation for ignoring JRE requirements,@cpovirk This completely removes the dependency on animal-sniffer annotations,(Thanks!) =||= ,0
+3656,3653,update failureaccess version to match docs with code,@cpovirk fix #3651 
+
+Other uses of 1.0.0 are in `@since` tags,nan,0
+3666,3561,Improve ImmutableList#of Javadoc,- link to the JDK equivalent Collections#singletonList rather than Collections#singleton (which returns a Set),
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3561) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3561) for more info**.
+
+<!-- ok --> =||= Thanks! We're going to merge this internally, and it should be synced out tomorrow. =||= ,0
+3674,3673,Update 'adding Guava to your build using Gradle' snippet,Hello from Gradle 👋 
+
+I noticed that the 'adding Guava to your build using Gradle' section in the README could use an update. So here it is.
+
+The notation with brackets - () - and double quotes - " - is valid in both Gradle's Groovy and Kotlin DSL. The keyword (the 'configuration') determines the scopes in which  the dependency is visible. "compile" is already discouraged since some time and officially deprecated with Gradle 6. "implementation" and "api" are both possible, but the initial recommendation for using a
+library should be "implementation".
+
+https://docs.gradle.org/6.0-rc-1/userguide/java_library_plugin.html#sec:java_library_recognizing_dependencies,Thanks! It sounds like we should definitely be moving off `compile` at this point.
+
+In the past, though, we've heard people (@tbroyer, @JakeWharton) suggest that `api` makes a safer default than `implementation`:
+- https://github.com/google/guava/pull/3154
+- https://github.com/google/auto/issues/620
+
+(The Auto discussion touches on [especially controversial issues around annotations](https://github.com/google/auto/pull/765#discussion_r330655031), which might be a distraction from the more common case -- though Guava does include annotations, too!)
+
+Even if we do give `api` as a "default" recommendation, I can certainly see _mentioning_ `implementation`, ideally by saying something like:
+> If you can make _certain guarantees_ \[link\], then you can change `api` to `implementation` to let Gradle skip work in some cases.
+
+...
+
+OK, and now I actually went and read the docs you linked to :) (Thanks!) I see how `implementation` has its advantages beyond build speed.
+
+I'll revise what I said above to something more like "It's complicated" :) I'm now not sure it makes sense to give _either_ recommendation as a "default."
+
+I would be tempted to put:
+
+> <pre>
+> dependencies {
+>   <i>some-configuration</i>("com.google.guava:guava:28.1-jre")
+>   // or, for Android:
+>   <i>some-configuration</i>("com.google.guava:guava:28.1-android")
+> }
+> </pre>
+> ...where <i>some-configuration</i> is either `implementation` or `api`, as discussed [in the Gradle docs](https://docs.gradle.org/6.0-rc-1/userguide/java_library_plugin.html#sec:java_library_recognizing_dependencies).
+
+Thoughts on that? =||= Thanks for the quick response @cpovirk. I wasn't aware that there is such a history in discussing this little snippet. :) And of course it depends a lot on whom you ask what the more sensible default is. From our side, we prefer recommending "implementation" because the user will have to make the explicit decision to expose it, if they are developing a library/module used by others. But I can also understand the "some users just want it to work as before/as in Maven" argument.
+
+The downside of the "some-configuration" would be that it looses it's nice "copy&paste" character. Also in theory it makes sense as there are even more configurations you can use.
+
+How about adding both?
+```
+dependencies {
+  // Use Guava in your implementation
+  implementation("com.google.guava:guava:28.1-jre")
+  // Use Guava types in your public API
+  api("com.google.guava:guava:28.1-jre")
+  // Android: Use Guava in your implementation
+  implementation("com.google.guava:guava:28.1-android")
+  // Android: Use Guava types in your public API
+  api("com.google.guava:guava:28.1-android")
+}
+```
+ The comments are vastly simplifying the effect, but give a rough guidance for users who absolutely have no idea.
+ =||= I am encouraged enough by tbroyer's thumbs-up to move on to tweaking wording :)
+
+> ```gradle
+> dependencies {
+>   // Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-jre")
+>   // OR: Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-jre")
+> ```
+> 
+> Or, for Android:
+> 
+> ```gradle
+> dependencies {
+>   // Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-android")
+>   // OR: Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-android")
+> }
+> ```
+
+But maybe that separates the Android and non-Android cases too widely? Plus, we'd probably want to do the same for Maven, which is more verbose, so we'd end up with 4 code blocks, some of them large :\
+
+> ```gradle
+> dependencies {
+>   // Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-jre")
+>   // OR: Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-jre")
+> }
+>
+> // Or, for Android:
+> 
+> dependencies {
+>   // Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-android")
+>   // OR: Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-android")
+> }
+> ```
+
+That would mean only 2 code blocks (Gradle and Maven), and maybe we can get away with keeping the Maven one as it is?
+
+I don't know, or:
+
+> ```gradle
+> dependencies {
+>   // Pick one:
+>
+>   // 1. Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-jre")
+>
+>   // 2. Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-jre")
+>
+>   // 3. Android - Use Guava in your implementation only:
+>   implementation("com.google.guava:guava:28.1-android")
+>
+>   // 4. Android - Use Guava types in your public API:
+>   api("com.google.guava:guava:28.1-android")
+> }
+> ```
+
+Maybe I like that one?
+
+(Whatever we do, we should link to the nice Gradle docs.) =||= I also like the last suggestion. With the newlines in between it's more readable than what I suggested. I think it's good to keep having one block for Maven and one for Gradle. Then it's easier to spot that each is about one tool.
+
+Below the listing we can add a sentences like:
+
+For more information on when to use `api` and when to use `implementation`, consult the [Gradle documentation on  API and implementation separation](https://docs.gradle.org/current/userguide/java_library_plugin.html#sec:java_library_separation) =||= Sounds good to me. Want to update the PR to that, and I can import it? =||= Done! Thanks @cpovirk! =||= ,0
+3677,3507,Update Javadoc of UnsignedBytes.java,UnsignedBytes ```min()``` and ```max()``` method treat its parameter as unsigned and returns the least and greatest value also too as unsigned respectively. It should be updated in the Javadoc.
+
+Test Case:-
+
+Input:-
+```
+import com.google.common.primitives.UnsignedBytes;
+
+class ex{
+    static void pr(byte []a) {
+        System.out.println(UnsignedBytes.min(a)); // 10 is less than -100 when treated as unsigned
+        System.out.println(UnsignedBytes.max(a)); // -100 is greater than 10 when treated as unsigned
+    }
+    public static void main(String[] args) {
+        byte []a={-100,10};
+        pr(a);
+    }
+}
+```
+Run it by typing in the terminal:-
+```
+javac ex.java
+java ex
+```
+Output:-
+```
+10
+-100
+```,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here (e.g. `I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3507) for more info**.
+
+<!-- need_sender_cla --> =||= > Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+> 
+>  **Please visit https://cla.developers.google.com/ to sign.**
+> 
+> Once you've signed (or fixed any issues), please reply here (e.g. `I signed it!`) and we'll verify it.
+> 
+> #### What to do if you already signed the CLA
+> ##### Individual signers
+> * It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+> 
+> ##### Corporate signers
+> * Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+> * The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+> * The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+> 
+>  **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3507) for more info**.
+
+```I signed it!``` =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3507) for more info**.
+
+<!-- ok --> =||= It looks like we do mention unsignedness in the Javadoc of other methods on the class, so this seems reasonable. I'll try to get this submitted internally soon (with a couple small modifications). =||= ,0
+3684,3565,Remove usages of deprecated CharMatcher functions,Methods like charMatcher.digit() or javaLetterDigit() which would match digit and digit or letters in string is being deprecated by guava. Such methods are replace by inRange methods. For example, instead of digit(), it would be inRange('0', '9').
+
+This PR closes #3544.,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!`) and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google.com/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3565) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= We found a Contributor License Agreement for you (the sender of this pull request), but were unable to find agreements for all the commit author(s) or Co-authors.  If you authored these, maybe you used a different email address in the git commits than was used to sign the CLA ([login here](https://cla.developers.google.com/) to double check)?  If these were authored by someone else, then they will need to sign a CLA as well, and confirm that they're okay with these being contributed to Google.
+In order to pass this check, please resolve this problem and then comment `@googlebot I fixed it.`. If the bot doesn't comment, it means it doesn't think anything has changed.
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3565) for more info**.
+
+<!-- need_author_cla --> =||= @googlebot I fixed it. =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3565) for more info**.
+
+<!-- ok --> =||= ,0
+3710,3706,checker-qual 2.10.0,nan,nan,0
+3726,3721,MutableNetwork.hasEdgeConnecting throw IllegalArgumentException when node are missing,According to the javadoc, the hasEdgeConnecting method is equivalent to nodes().contains(nodeU) && successors(nodeU).contains(nodeV).
+But, unlike this expression, it throws an exception if the nodes are unknown.
+Here is a simple demonstration
+```java
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
+
+public class Bug {
+	public static void main(String[] args) {
+		final MutableNetwork<String, String> graph = NetworkBuilder.undirected().allowsParallelEdges(false).build();
+		// Foolowing line prints false
+		System.out.println(graph.nodes().contains("1") && graph.successors("1").contains("2"));
+		// Next should print false but throws an IllegalArgumentException
+		System.out.println(graph.hasEdgeConnecting("1", "2"));
+	}
+}
+```
+version guava-28.1-jre,It looks like a bit subtle, but `successors(nodeU).contains(nodeV)` throws an `IllegalArgumentException` when `nodeU` is not in the network (which is the actual behavior you're seeing here).
+
+However, you're right that the short-circuiting behavior of `&&` isn't replicating here. That seems like an important part of the documented behavior :). FWIW, it appears to also throw an IllegalArgumentException even if `"1"` is in the network but `"2"` isn't. =||= This is just a straight-up bug on our parts; I'm coding up a fix now.
+
+The problem originates in the fact that `hasEdgeConnecting()` is actually (in effect) calling `edgesConnecting().isEmpty()`.  This seems reasonable on the face of it, but `edgesConnecting(u, v)` has the contract that it throws if either `u` or `v` are not in the graph; this is consistent with the contracts for the other `Set`-returning accessors, but it's not what we want for boolean-returning queries like `hasEdgeConnecting()`.
+
+Sorry about that; thanks for the catch.  :) =||= I've submitted an internal fix; this should be propagating externally soon. =||= This is fixed in v28.2: https://github.com/google/guava/releases/tag/v28.2 =||= ,0
+3748,3745,Refactor Lambda can be replaced method reference,nan,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3745) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3745) for more info**.
+
+<!-- ok --> =||= ,0
+3765,3761,Fix off-by-one error in AsciiDigits.asciiDigits initialization,`AsciiDigits.digit('[')` should return -1 instead of 36.
+
+I changed both loops to consistently use strict inequalities. Now it's clear that there are 10 + 26 = 36 digits / iterations in total.
+
+Fortunately this bug doesn't affect anything other than `Longs.tryParse` where it is - by accident - harmless.
+
+https://github.com/google/guava/blob/v28.2/guava/src/com/google/common/primitives/Longs.java#L405
+https://github.com/google/guava/blob/v28.2/guava/src/com/google/common/primitives/Longs.java#L414
+
+Note that `Longs.tryParse('[', 36)` and `Longs.tryParse('0[', 36)` currently return `null` because of `digit >= radix` condition, not `digit < 0` as it should be.
+
+,I said about '[' = 'A' + 26 = 'Z' + 1, but I forgot to mention '{' = 'a' + 26 = 'z' + 1. Just for the record.
+ =||= ,0
+3796,3788,Make AbstractFuture compatible with ForkJoinPool by catching exceptions from property retrieval,Context: https://github.com/google/guava/issues/3784,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3788) for more info**.
+
+<!-- need_sender_cla --> =||=  I submitted the corporate CLA on behalf of Snowflake, but I need our authorized signer (our VP) to click through the agreement still. Once that happens, I'll trigger the cla/google check again. =||= Hmm is there a way to see the test outputs for Travis CI? The log indicates that the new test fails, but I don't see that `/home/travis/build/google/guava/guava-tests/target/surefire-reports` is made available anywhere... =||= On [the job log page](https://travis-ci.org/google/guava/jobs/643496489), you can scroll _way_ to the bottom and click the `$ util/print_surefire_reports.sh` line and -- I see that it's not working :( I will have a look. Sorry about that. =||= Odd. It works for me locally (also maven-surefire-plugin:2.7.2, though only Maven 3.5). I wonder what's different about Travis.
+
+If you're lucky, the problem will reproduce for you locally:
+`mvn clean install "-Dtest.include=**/AbstractFutureInnocuousThreadTest.java"`
+
+(You can probably skip the `clean` part, but I am always nervous about doing so.) =||= OK, I patched in your PR, so I have updates on 2 fronts:
+
+First, the failure is this:
+
+```
+testAbstractFutureInitializationWithInnocuousThread_doesNotThrow(com.google.common.util.concurrent.AbstractFutureInnocuousThreadTest)  Time elapsed: 0.151 sec  <<< ERROR!
+java.security.AccessControlException: access denied ("java.lang.RuntimePermission" "closeClassLoader")
+  at java.security.AccessControlContext.checkPermission(AccessControlContext.java:472)
+  at java.security.AccessController.checkPermission(AccessController.java:884)
+  at java.lang.SecurityManager.checkPermission(SecurityManager.java:549)
+  at java.net.URLClassLoader.close(URLClassLoader.java:289)
+  at com.google.common.util.concurrent.AbstractFutureInnocuousThreadTest.tearDown(AbstractFutureInnocuousThreadTest.java:80)
+...
+```
+
+I am able to reproduce it locally -- but _not_ when using the `test.include` flag from my previous post. It's possible that this means that your test is affected by a previous test's incomplete cleanup or other poor hygiene (`AbstractFutureFallbackAtomicHelperTest`? `AbstractFutureCancellationCauseTest`?).
+
+Second, I'm not completely sure what's up with `util/print_surefire_reports.sh`. Locally, I get a "successful" run but with no results with your commit patched in. That's because I'm seeing `.xml` files for most tests but _not_ seeing one for _your_ test. Maybe that's related to the `SecurityManager`?
+
+I don't know why the situation would be different under Travis, under which there are apparently _no_ `.xml` files.... =||= Now I am more confused!
+
+In an attempt to narrow down which tests were causing the problem, I ran:
+`mvn clean install "-Dtest.include=%regex[.*util.concurrent.*.class]"`
+
+That got this far:
+```
+Running com.google.common.util.concurrent.AbstractExecutionThreadServiceTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.09 sec
+Running com.google.common.util.concurrent.AbstractFutureCancellationCauseTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 sec
+Running com.google.common.util.concurrent.AbstractFutureFallbackAtomicHelperTest
+Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 33.034 sec
+Running com.google.common.util.concurrent.AbstractFutureInnocuousThreadTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.073 sec
+```
+
+Those all appear to be successes. But then the run aborted, claiming:
+```
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.7.2:test (default-test) on project guava-tests: There are test failures.
+```
+
+So I'm not sure what's up. Hopefully it will be clearer to you from the code. =||= Thanks for taking a look! I wonder if resetting the `SecurityManager` to its original state at the end of the test would fix the problem...I'll give that a shot locally without the test filter and then see if it passes, then see if another Travis run will succeed. =||= I really wish I could see the test output from Travis...I tried resetting the `SecurityManager` with `System.setSecurityManager(null);` at the end of the test, and both `mvn clean install "-Dtest.include=%regex[.*util.concurrent.*.class]"` and `mvn clean install "-Dtest.include=**/AbstractFutureInnocuousThreadTest.java"` pass for me now, but it looks like the tests through Travis are still failing based on the result above :(
+
+Is `/home/travis/build/google/guava/guava-tests/target/surefire-reports` kept around in any logs/outputs? =||= Let's check on the CLA status at least, since we submitted the corporate one:
+
+@googlebot I signed it! =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3788) for more info**.
+
+<!-- ok --> =||= Woohoo, the CLA check passes now.
+
+Separately, though, I found a way to avoid depending on `ForkJoinPool` within Arrow Flight, so it's fine if `AbstractFuture` tries to access properties, and I'm not blocked on this PR any more. I'm happy to try to see it to completion, but it's not urgent in any case. =||= Thanks! I grabbed your test and tweaked it to use a custom `SecurityManager` subclass instead of writing a policy file. That appears to be enough to get `mvn clean install` to pass. Do you have any comments on the result, https://github.com/google/guava/pull/3795? =||= (You can ignore the second copy of the files (from the `android` directory). I probably should have omitted that copy from the PR.) =||= Nice, LGTM! Thanks for figuring out a way to make it work. It sounds like this project doesn't merge changes from Github anyway, so we can close this PR if you want to proceed with submitting your version to google3 (and then I'm assuming the changes get exported to Github at some point). =||= Right, we'll make the equivalent change internally and then mirror it back out (with your name attached). That will automatically close this PR, so we can keep it open just in case I somehow forget about it :) =||= ,0
+3796,3784,AbstractFuture and ForkJoinPool are incompatible with SecurityManager,I was bitten by the issue described in https://stackoverflow.com/a/31052486/6253347 \[cpovirk adds (for searchability): might https://stackoverflow.com/q/55333290/28465 also be similar?\] when trying to use Arrow Flight with Java's SecurityManager, since `AbstractFuture` tries to check a property as part of initialization and hence can't be created from an `InnocuousThread` that doesn't have any privileges. The exception looks like this:
+
+```
+Caused by: java.security.AccessControlException: access denied ("java.util.PropertyPermission" "guava.concurrent.generate_cancellation_cause" "read")
+	at java.base/java.security.AccessControlContext.checkPermission(AccessControlContext.java:472)
+	at java.base/java.security.AccessController.checkPermission(AccessController.java:1044)
+	at java.base/java.lang.SecurityManager.checkPermission(SecurityManager.java:408)
+	at java.base/java.lang.SecurityManager.checkPropertyAccess(SecurityManager.java:1152)
+	at java.base/java.lang.System.getProperty(System.java:880)
+	at com.google.common.util.concurrent.AbstractFuture.<clinit>(AbstractFuture.java:64)
+```
+
+I can try to put together a small repro if it's useful, but the TL;DR is that I'd like to wrap the call at https://github.com/google/guava/blob/master/guava/src/com/google/common/util/concurrent/AbstractFuture.java#L74 in a try/catch, since it will throw if access to system properties is not permitted by the SecurityManager.,Thanks, that sounds great. If you'd like to put together a pull request, you're welcome to (though note that it will require [you or your company to sign the CLA](https://github.com/google/guava/blob/master/CONTRIBUTING.md#contributor-license-agreement)). =||= Sorry, accidentally submitted early. The other thing I wanted to do was link to [a test that loads its own copy of `AbstractFuture`](https://github.com/google/guava/blob/66c2f795f2cbc90e104dde9d73ceb484b184b34b/guava-tests/test/com/google/common/util/concurrent/AbstractFutureCancellationCauseTest.java#L45). That would be the ideal test here, since it easily can run in the same VM as the rest of our tests. Alternatively, we could probably get away with a separate test class that we configure to run in a separate VM. =||= Thanks for the pointer! Do you think it would be okay to configure `AbstractFutureCancellationCauseTest` to use `SecurityManager` by default, or should I create a separate test file? Which directory does it make sense to put the policy file in?
+
+I'm working on something more polished and looking into the CLA, but I was able to reproduce the failure by creating a hacky test like this:
+
+```
+  public void testInnocuousThreadWithAbstractFuture() throws Exception {
+    AtomicBoolean success = new AtomicBoolean(false);
+    Thread thread = jdk.internal.misc.InnocuousThread.newThread(
+      () -> {
+        try {
+          Future<?> future = newFutureInstance();
+          assertTrue(future.cancel(false));
+          assertTrue(future.isCancelled());
+          success.set(true);
+        } catch (Exception e) {
+          fail("Unexpected exception: " + e.toString());
+        }
+      });
+    thread.start();
+    thread.join();
+    assertTrue(success.get());
+  }
+```
+
+The cumbersome part, though, is that you have to set up a SecurityManager profile and pass some additional command-line arguments. I made a permissive policy like this:
+
+```
+grant {
+  permission java.io.FilePermission "/-", "read";
+  permission java.util.PropertyPermission "*", "read,write";
+  permission java.lang.reflect.ReflectPermission "*";
+  permission java.lang.RuntimePermission "*";
+};
+```
+
+And then used these command-line arguments to Java:
+```
+-Djava.security.manager -Djava.security.policy=/path/to/java.policy -Djava.security.debug=access,failure --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+```
+
+The test fails since `success.set(true);` is never reached, and the test output has:
+
+```
+access: access denied ("java.util.PropertyPermission" "guava.concurrent.generate_cancellation_cause" "read")
+java.lang.Exception: Stack trace
+	at java.base/java.lang.Thread.dumpStack(Thread.java:1383)
+	at java.base/java.security.AccessControlContext.checkPermission(AccessControlContext.java:462)
+	at java.base/java.security.AccessController.checkPermission(AccessController.java:1044)
+	at java.base/java.lang.SecurityManager.checkPermission(SecurityManager.java:408)
+	at java.base/java.lang.SecurityManager.checkPropertyAccess(SecurityManager.java:1152)
+	at java.base/java.lang.System.getProperty(System.java:880)
+	at com.google.common.util.concurrent.AbstractFuture.<clinit>(AbstractFuture.java:74)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:567)
+	at com.google.common.util.concurrent.AbstractFutureCancellationCauseTest.newFutureInstance(AbstractFutureCancellationCauseTest.java:187)
+	at com.google.common.util.concurrent.AbstractFutureCancellationCauseTest.lambda$testInnocuousThreadWithAbstractFuture$0(AbstractFutureCancellationCauseTest.java:171)
+	at java.base/java.lang.Thread.run(Thread.java:835)
+	at java.base/jdk.internal.misc.InnocuousThread.run(InnocuousThread.java:134)
+```
+
+It should be possible to have the test use `java.util.concurrent.ForkJoinPool` rather than relying on the internal `InnocuousThread` class, but at least I was able to get a PoC working. =||= I was thinking more along the lines of a separate test class (though using the same classloading trick). I'm hoping that we don't need a separate policy file, given our ability to implement our own `SecurityManager`, as in [this test](https://github.com/google/guava/blob/66c2f795f2cbc90e104dde9d73ceb484b184b34b/guava-tests/test/com/google/common/reflect/ClassPathTest.java#L501). =||= Sent https://github.com/google/guava/pull/3788; comments welcome! =||= ,0
+3805,3800,Simplify redundant `Collection.addALl()` call,Simplify redundant `Collection.addALl()` call and Optimize performance.,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3800) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot  I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3800) for more info**.
+
+<!-- ok --> =||= A couple quick thoughts, since I sadly doubt that I'll be able to dedicate a lot of time to this:
+
+- I somewhat like to create the collection on one line and add to it on another _if_ I am then going to also _remove_ from it (or add more to it), like [here](https://github.com/google/guava/pull/3800/files#diff-f23f8f184b38c696a270e2e0ae0114eeL172). The multi-line process is a hint that there's going to be more to the collection than just its initial contents. That is, we're not just making a defensive copy. However, this is a minor point, and others might not see it that way. Plus, we're usually modifying the collection _immediately_ after creating, so there's not much danger of confusion.
+
+- For cases in which we add objects and then add more objects, I'm not sure that we necessarily improve performance by presizing to the size of the _first_ set of objects, like [here](https://github.com/google/guava/pull/3800/files#diff-c0a860430c2be8897c12525322b7fda5R491). It might actually be better to accept the default size.
+
+The unfortunate thing is that this code does need some performance tuning and general cleaning. I just fear that it would be a big investment. =||= Thanks for your code review. This PR was submitted for the following reasons : 
+* Using the constructor with parameter, it can save one time array copy.
+* Improving readability and polishing the code.
+
+But I agree with your thoughts : 
+* For the contextual semantic unity in a block of code.
+* The performance improvement may be small.
+* More time can be allocated for implementing features and fixing bugs
+
+I respect your decision, so what should I do? =||= Thanks. I'm going to skip `DerivedCollectionGenerators.java`, since I'm not sure if that will help or hurt performance. (I notice that that code could probably be simplified even further, but I left it alone.) I'm looking to merge the rest. =||= ,0
+3830,3501,Slicing a ByteSource twice throws an unexpected IllegalArgumentException,Currently, trying to slice a `ByteSource` twice throws an unexpected `IllegalArgumentException` if the `ByteSource` returned after the first slice has a length smaller than the offset of the subsequent slice. For example, this code throws an `IllegalArgumentException`:
+
+```
+import com.google.common.io.ByteSource;
+
+public class GuavaTest {
+    public static void main(String[] args) {
+        ByteSource.concat().slice(0, 3).slice(4, 3);
+    }
+}
+```
+
+That is against the documentation, where it is specified that it should return an empty `ByteSource`.,@cpovirk Should this issue be closed? It looks like it was fixed in #3830. =||= ,0
+3830,3829,Fixed double slicing ByteSource #3501,As previous PR has commit should not occur. So I submit a new PR and add a test.,nan,0
+3831,3816,Add UTs for base64Url() decode in BaseEncoding,I use base64Url in code if Gerrit to make the base64 URL safe.
+
+But found that it doesn't cover some basic cases. ,nan,0
+3856,3806,Remove @Beta from Service and ServiceManager,This leaves AbstractListeningExecutorService as @Beta.
+
+Closes: https://github.com/google/guava/issues/3418,nan,0
+3856,3418,Remove @Beta from Service and ServiceManager,- In Service, it looks like it might be nice to use Duration instead of (long, TimeUnit), but I'm not sure we're ready to take that plunge soon enough to worry about it -- and of course we want most people to run through ServiceManager (where we can add such overloads) anyway.
+
+(Rumor has it that Jesse Wilson might be interested in this.),Any idea if this will happen? I've been using this API, and I'd love to see the Beta removed from it. =||= I am interested in this. =||= It looks like `java.time` overloads have been added. Is this reasonable now, @cpovirk? =||= It's been on my list of items for the new issue-planning process. I've tied up the other few issues I was looking at, so this can be next. =||= Other open issues related to `Service`:
+- Services that are stopped cannot be restarted #418 
+- AbstractService needs functionality to triggerShutdown or interrupt running Tasks. #1918
+- RaceCondition with AbstractExecutionThreadService? #2966
+- Feature Request: allow specifying dependencies in ServiceManager #1406
+- Feature Request: add logging to ServiceManager.stopAsync #1405
+- Add Service.State.isTerminal() #2403
+
+Most of these look like features we could add after finalizing the existing API. The main exception is permitting restarting services, but that is a big enough change that we are unlikely to ever change the core `Service` classes for it, even when they are still `@Beta` APIs. (We may still provide some other way to emulate restartable services, just one that doesn't touch the core API.) =||= On the `Duration` front, we might wish that `AbstractScheduledService.CustomScheduler` were the name of the `Duration`-based API, rather than the `long, TimeUnit`-based (i.e., `Schedule`-based) API. But since that name is taken for the latter, we're likely to pick a clumsier name for the `Duration`-based method. But I'm not sure a rename of the existing API would be worth the trouble, especially since many Android users can't easily use `Duration` yet. =||= Also: I noticed recently that the `Service` and `ServiceManager` `await*` methods are `void` methods that throw `TimeoutException`. This seems contrary to JDK precedent, which appears to [use `TimeoutException` exclusively for non-`void` methods](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/class-use/TimeoutException.html). There are tradeoffs here (performance vs. chance of unintentionally ignoring a failure). It may also be worth noting that our `await*` methods can also throw `IllegalStateException` on failure, so we're already somewhat exception-oriented. Anyway, this feels more like an arguable wart than something we'd actually change. =||= Hmm, `ServiceManager` does have [a no-`Executor` overload of its `addListener` method](https://guava.dev/releases/snapshot-jre/api/docs/com/google/common/util/concurrent/ServiceManager.html#addListener-com.google.common.util.concurrent.ServiceManager.Listener-), which is contrary to our usual practices. We may want to take a look at removing that. But that shouldn't interfere with removing `@Beta` from the rest of the API. =||= `ImmutableMultimap` is an unfortunate return type for `servicesByState()`: We recommend either `ImmutableListMultimap` or `ImmutableSetMultimap`, as appropriate (here, `ImmutableSetMultimap`). Shockingly, this _might_ be the only place that we inappropriately returned `ImmutableMultimap` / `Multimap`. We could try to fix that if we wanted. =||= Note that we can improve the return type of `servicesByState()` compatibly by injecting a bridge method. =||= For #418, I think the best solution is to start a fresh instance of the `Service` class. That also makes it much easier to implement correct services.
+
+For #1406 I’ve got a full implementation of this in Misk; here's an [example test](https://github.com/cashapp/misk/blob/master/misk-service/src/test/kotlin/misk/ServiceGraphBuilderTest.kt). The trickiest part of our solution was expressing dependency relationships without instantiating Service objects first. For example, we won’t construct `SchemaMigratorService` until `DatabaseConnectionService` is `RUNNING`. Our solution is deeply coupled to Guice because it’s what does the instance creation stuff. I found it very convenient to express service dependencies alongside DI.
+ =||= Thanks. I suspect that we will keep the no-`Executor` overload of `addListener` as `@Beta` so that we can deprecate and remove it, but I'm optimistic that we can remove `@Beta` from the rest. I'll try to have an update by the end of the week. =||= For #1406 we've done something kind of like what you have @swankjesse, but using a Kotlin DSL:
+```kotlin
+class CoordinatedServicesBuilder {
+    private val dependencyGraph = GraphBuilder.directed().build<Service>()
+
+    fun Service.dependsOn(vararg upstreamServices: Service) {
+        dependencyGraph.addNode(this) // allow no dependencies
+        upstreamServices.forEach { service ->
+            dependencyGraph.putEdge(this, service)
+        }
+    }
+
+    fun build(): Set<Service> {
+        require(!Graphs.hasCycle(dependencyGraph))
+        // Assemble the set of coordinated services
+    }
+}
+
+fun createCoordinatedServices(init: CoordinatedServicesBuilder.() -> Unit) =
+    CoordinatedServicesBuilder().apply(init).build()
+```
+
+Usage is then:
+```kotlin
+val serviceManager = 
+    ServiceManager(
+        createCoordinatedServices {
+            serviceA.dependsOn(serviceB)
+            serviceB.dependsOn(serviceC)
+            serviceD.dependsOn()
+        }
+    )
+```
+
+We weren't worried about instantiation order. We also built an extension to ServiceManager to allow it to be used as a Service - since we have some Services that manage many other Services from one class. Not sure how much general utility that could find. =||= As hinted at [in #2966](https://github.com/google/guava/issues/2966#issuecomment-604029891), we aren't sure if we love the contract of `AbstractExecutionService.triggerShutdown`, so we might leave that `@Beta`, too, recommending that users who want similar functionality (and want to avoid `@Beta` APIs) attach a `stopping` listener to do that sort of work.
+
+Nothing new has come up in the past couple days, though, so I've started work on deprecating the 1-arg `addListener`.
+
+\[edit: following after https://github.com/google/guava/commit/ce37aee980860798636f80ff67e0c00999a47696 \] =||= Progress:
+- Deprecated 1-arg overload of `ServiceManager.addListener`.
+- Made `Duration` overloads of `awaitRunning` and `awaitTerminated` `final` in all `Abstract*Service` classes.
+- Changed return type of `ServiceManager.servicesByState()` to `ImmutableSetMultimap` (but also retained a method with the old signature for binary compatibility). \[not yet mirrored out\]
+
+I'm planning to put `@Beta` on `AbstractExecutionService.triggerShutdown` and `AbstractService.doCancelStart` and then remove `@Beta` from the types under discussion.
+
+If anyone objects, please speak up soon :) =||= Jesse / others: Let me know how this looks. (I tweaked Jesse's CL slightly to keep 2 individual methods `@Beta`, but other than that, it should look just how you'd expect.) =||= # 🎉
+# β
+# 💯
+
+Thanks! =||= ,0
+3872,3857,Updated readme.MD with some grammar corrections,Added ',' below the heading 'Adding Guava to your build'.
+Added ',' in front of 'i.e' at the first 'Important Warnings'.
+Removed an unnecessary ',' in the first 'Important Warnings'.,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3857) for more info**.
+
+<!-- need_sender_cla --> =||= I signed a CLA
+ =||= @rohitpotdukhe check the exact message the bot wrote
+
+> Once you've signed (or fixed any issues), please reply here with (at)googlebot I signed it! and we'll verify it.
+
+The quote fixed it now for you. =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3857) for more info**.
+
+<!-- ok --> =||= @googlebot I signed it!  =||= > @rohitpotdukhe check the exact message the bot wrote
+> 
+> > Once you've signed (or fixed any issues), please reply here with (at)googlebot I signed it! and we'll verify it.
+> 
+> The quote fixed it now for you.
+
+oh my bad, thank you for pointing that out for me. =||= ,0
+3876,3873,Sets.cartesianProduct.contains' complexity depended on now-removed optimization in Android version,This was almost certainly my fault, but as I look at the implementation of Sets.cartesianProduct, I think its `contains` method made the assumption that `ImmutableSet.asList().indexOf` was O(1), which is no longer the case for Android.  It should probably get a specific `contains` implementation that actually is O(sets), not O(sets*setSize).,nan,0
+3885,3883,Move comment to a more appropriate location,Signed-off-by: Sebastian Zarnekow <sebastian.zarnekow@gmail.com>,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3883) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3883) for more info**.
+
+<!-- ok --> =||= Thanks!
+
+A quick question in case you happen to have immediate thoughts on it. If not, no problem.
+
+Is it suspicious that the `putCoalescing` implementation for `subRangeMap` has the very kind of `range.isEmpty()` check that this comment seems to warn against?
+https://github.com/google/guava/blob/bc7248bcb0a987e18cf7a4e7ef92ed458086f4b0/guava/src/com/google/common/collect/TreeRangeMap.java#L511 =||= Good catch. Test and fix is in https://github.com/google/guava/pull/3886 =||= ,0
+3887,3886,Fixed TreeRangeMap.SubRangeMap.putCoalescing,The short circuiting on an attempt to put an empty range caused the contract of putCoalescing to be violated.
+
+Signed-off-by: Sebastian Zarnekow <sebastian.zarnekow@gmail.com>,Thanks! =||= ,0
+3892,3891,Fix equals when comparing two PowerSet instances with different order,Fixes https://github.com/google/guava/issues/3890,Thanks for the improvement! That certainly does look like a bug, and I appreciate the reproducing test.
+
+I'll mirror this change internally, and you should see it added back out later today or tomorrow. =||= Cool; thank you! :grin: I'm very glad to have helped. =||= ,0
+3892,3890,PowerSet.equals depends on set's iteration order,If `com.google.common.collect.Sets.powerSet` is called with two different sets that contain the same elements but in a different iteration order, the returned power sets will also contain the same elements but in a different iteration order. Therefore, `Set.equals` on those power sets is `true`, but `com.google.common.collect.Sets.PowerSet.equals` incorrectly returns `false`.,Wow, almost 7 years old! Nice find. =||= Thanks! :grin: =||= 👍👍👍👍😀😀 =||= ,0
+3893,3880,Implement tryLockUninterruptibly,Based on awaitUninterruptibly(Condition, ..),
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3880) for more info**.
+
+<!-- need_sender_cla --> =||= @arhimondr Before this can/will be merged you need to sign the cla. Check the message from the googlebot. =||= @original-codematrix I'm on it. Hopefully I'm going to be able to sign soon. =||= @googlebot I signed it! =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3880) for more info**.
+
+<!-- ok --> =||= @original-codematrix done =||= ,0
+3899,3878,Issue #3874: Improve cartesianProduct.lastIndexOf ,Implemented `lastIndexOf()` in `CertesianList` and added appropriate tests.,nan,0
+3922,3911,UnmodifiableMultimap.forEach inefficiently uses the default implementation,`UnmodifiableMultimap.forEach` uses the `Multimap.forEach` default implementation which involves listing entries, and creating a new lambda instead of simply passing the BiConsumer through to the protected instance. This is safe to pass directly though because `forEach(BiConsumer)` is a read-only operation.,Proposed solution: https://github.com/google/guava/pull/3912 =||= ,0
+3922,3912,Fix #3911 Efficient UnmodifiableMultimap forEach,forEach can pass calls directly to the delegate protected
+collection because it is a read-only operation.,nan,0
+3971,3908,#1315 Add awaitTerminationUninterruptibly(..) for ExecutorService - M…,@cpovirk 
+Kindly review the changes and suggest edits.
+
+Thanks,
+Nisarg,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3908) for more info**.
+
+<!-- need_sender_cla --> =||=  @googlebot I signed it!
+
+On Thu, May 21, 2020 at 7:09 PM googlebot <notifications@github.com> wrote:
+
+> Thanks for your pull request. It looks like this may be your first
+> contribution to a Google open source project (if not, look below for help).
+> Before we can look at your pull request, you'll need to sign a Contributor
+> License Agreement (CLA).
+>
+> 📝 *Please visit https://cla.developers.google.com/
+> <https://cla.developers.google.com/> to sign.*
+>
+> Once you've signed (or fixed any issues), please reply here with @googlebot
+> I signed it! and we'll verify it.
+> ------------------------------
+> What to do if you already signed the CLA Individual signers
+>
+>    - It's possible we don't have your GitHub username or you're using a
+>    different email address on your commit. Check your existing CLA data
+>    <https://cla.developers.google.com/clas> and verify that your email is
+>    set on your git commits
+>    <https://help.github.com/articles/setting-your-email-in-git/>.
+>
+> Corporate signers
+>
+>    - Your company has a Point of Contact who decides which employees are
+>    authorized to participate. Ask your POC to be added to the group of
+>    authorized contributors. If you don't know who your Point of Contact is,
+>    direct the Google project maintainer to go/cla#troubleshoot (Public
+>    version <https://opensource.google/docs/cla/#troubleshoot>).
+>    - The email used to register you as an authorized contributor must be
+>    the email used for the Git commit. Check your existing CLA data
+>    <https://cla.developers.google.com/clas> and verify that your email is
+>    set on your git commits
+>    <https://help.github.com/articles/setting-your-email-in-git/>.
+>    - The email used to register you as an authorized contributor must
+>    also be attached to your GitHub account
+>    <https://github.com/settings/emails>.
+>
+> ℹ️ *Googlers: Go here
+> <https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3908>
+> for more info*.
+>
+> —
+> You are receiving this because you authored the thread.
+> Reply to this email directly, view it on GitHub
+> <https://github.com/google/guava/pull/3908#issuecomment-632390610>, or
+> unsubscribe
+> <https://github.com/notifications/unsubscribe-auth/ADNQ3YFEPL6LADZDHLJJYY3RSWYA3ANCNFSM4NHIUQYQ>
+> .
+>
+ =||= @googlebot I signed it! =||=  @googlebot I signed it!
+
+On Thu, May 21, 2020 at 7:14 PM Nisarg Chokshi <nchokshi95@gmail.com> wrote:
+
+> @googlebot I signed it!
+>
+> On Thu, May 21, 2020 at 7:09 PM googlebot <notifications@github.com>
+> wrote:
+>
+>> Thanks for your pull request. It looks like this may be your first
+>> contribution to a Google open source project (if not, look below for help).
+>> Before we can look at your pull request, you'll need to sign a Contributor
+>> License Agreement (CLA).
+>>
+>> 📝 *Please visit https://cla.developers.google.com/
+>> <https://cla.developers.google.com/> to sign.*
+>>
+>> Once you've signed (or fixed any issues), please reply here with @googlebot
+>> I signed it! and we'll verify it.
+>> ------------------------------
+>> What to do if you already signed the CLA Individual signers
+>>
+>>    - It's possible we don't have your GitHub username or you're using a
+>>    different email address on your commit. Check your existing CLA data
+>>    <https://cla.developers.google.com/clas> and verify that your email
+>>    is set on your git commits
+>>    <https://help.github.com/articles/setting-your-email-in-git/>.
+>>
+>> Corporate signers
+>>
+>>    - Your company has a Point of Contact who decides which employees are
+>>    authorized to participate. Ask your POC to be added to the group of
+>>    authorized contributors. If you don't know who your Point of Contact is,
+>>    direct the Google project maintainer to go/cla#troubleshoot (Public
+>>    version <https://opensource.google/docs/cla/#troubleshoot>).
+>>    - The email used to register you as an authorized contributor must be
+>>    the email used for the Git commit. Check your existing CLA data
+>>    <https://cla.developers.google.com/clas> and verify that your email
+>>    is set on your git commits
+>>    <https://help.github.com/articles/setting-your-email-in-git/>.
+>>    - The email used to register you as an authorized contributor must
+>>    also be attached to your GitHub account
+>>    <https://github.com/settings/emails>.
+>>
+>> ℹ️ *Googlers: Go here
+>> <https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3908>
+>> for more info*.
+>>
+>> —
+>> You are receiving this because you authored the thread.
+>> Reply to this email directly, view it on GitHub
+>> <https://github.com/google/guava/pull/3908#issuecomment-632390610>, or
+>> unsubscribe
+>> <https://github.com/notifications/unsubscribe-auth/ADNQ3YFEPL6LADZDHLJJYY3RSWYA3ANCNFSM4NHIUQYQ>
+>> .
+>>
+>
+ =||= CLAs look good, thanks!
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3908) for more info**.
+
+<!-- ok --> =||= ,0
+3971,1315,Add awaitTerminationUninterruptibly(..) for ExecutorService,_[Original issue](https://code.google.com/p/guava-libraries/issues/detail?id=1315) created by **chriss.dev** on 2013-03-02 at 12:05 PM_
+
+---
+
+The interface ExecutorService provides the method awaitTermination(long,TimeUnit), it would be nice to have "uninterruptibly" pendats in the Uninterruptibles-class like:
+
+boolean awaitTerminationUninterruptibly(ExecutorService executor,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long timeout,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TimeUnit unit)
+
+//await the termination till the end of all days
+void awaitTerminationUninterruptibly(ExecutorService executor),_[Original comment](https://code.google.com/p/guava-libraries/issues/detail?id=1315#c1) posted by **wasserman.louis** on 2013-11-29 at 05:08 PM_
+
+---
+
+_Issue #1595 has been merged into this issue._
+ =||= I would also like this. Let's add votes to this as more people want it. =||= Hey,
+I would like to work on this.. So based on the original issue, we need 2 methods:
+
+- `boolean awaitTerminationUninterruptibly(ExecutorService executor, long timeout, TimeUnit unit)`
+- `void awaitTerminationUninterruptibly(ExecutorService executor)`
+
+And the 1st one will be similar to `boolean awaitUninterruptibly(CountDownLatch latch, long timeout, TimeUnit unit)` but for the ExecutorService while the 2nd one will call the first one but for a very long time as timeout.
+
+Does this make sense?
+
+Thanks! =||= Thanks!
+
+For the second one, we implement it separately to avoid the calls to `System.nanoTime()` entirely. (Those calls aren't _too_ expensive, but it's straightforward enough to implement both the timed and untimed versions.) As you've probably seen, we have some [existing examples of untimed implementations](https://github.com/google/guava/blob/45958948bea8f7aaf38c1a3dd200ce0263c0bcfa/guava/src/com/google/common/util/concurrent/Uninterruptibles.java#L53). =||= @cpovirk 
+The `CountDownLatch` has 2 methods for await (with and without timeout) which is why we can leverage it to avoid the call to `System.nanoTime()`. But for ExecutorService, there is just one `awaitTermination` which needs the timeout. So we will require the call. 
+I'll see if I can find a way to bring these 2 methods as close as I can to the current method designs though.
+
+Thanks,
+Nisarg =||= Oops, now I understand. I guess you can still avoid calling nanoTime by repeatedly calling awaitTermination with the same large timeout, but I see now why it's not the same as CountDownLatch.
+
+We could also consider not providing the infinite-wait version. =||= Yeah.. I don't see any harm in keeping the method for anyone to use if really need to. I will handle the case where I will set a large timeout and not call `System.nanoTime()` when infinite time method is called. 
+What do you think?
+
+Also, along with this code and it's corresponding testcases in the test file, is there anything else that will be needed (documentation, etc)? =||= Thanks, that all sounds great. I don't think we need anything else. =||= @cpovirk Any update on my pull request? =||= ,0
+4020,4012,Fixed Typos/Grammatical Errors,I just ran stuff through grammar checkers and found some typos/grammatical errors. Since I only added some small changes, I didn't think I needed to do anything special like open an issue or something, but if I should in the future please tell me. If you think I got some stuff wrong, I'll fix it but there are definitely some typos in there.,Thanks. I'm going to merge the typo fixes and a simplification. The rest of the changes look more neutral (and a few of them look like steps backward). In the interest of getting this merged quickly, I'll stick to the noncontroversial ones. =||= Two of these changes are typo fixes, but _none_ of them fixes a grammatical error. Four go from correct to differently correct, one goes from correct to differently correct but definitely less clear, one goes from correct to incorrect, one goes from debatably correct to definitely incorrect, and one goes from correct code formatting to incorrect code formatting. =||= Thanks for your feedback, I went and changed what I thought you were talking about and now there are only more correct changes (I think). If there is anything else, please let me know. And sorry about the code formatting, I don't know what's going on with that. =||= Ok, I fixed everything you said. Now it's just the bare minimal typos. =||= ,0
+4020,4018,Bump checker-qual from 2.11.1 to 3.6.1,nan,https://github.com/google/guava/commit/1bfbca3bcb06c5cbe10a5cb6843d85b09c643e0e gets us _part_ of the way there (at least to major version 3, which, as you've pointed out, is the especially important part).
+
+Bonus: We may actually make a Guava release pretty soon. =||= Thanks for upgrading to 3.5.0. =||= ,0
+4029,4007,Issue #4004 AssertionError from Range.gap.,Fix #4004, Got IAE instead of AssertionError.,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F4007) for more info**.
+
+<!-- need_sender_cla --> =||= Thanks. I suspect that what we'd prefer is to avoid calling `describeAsLowerBound` at all in this case. But I'd have to look at `gap` more to confirm (and to figure out what to do instead). =||= I think the problem is the ranges contain each other(intersection), it is illegal for `gap`.
+and I made an opposite case.
+```java 
+Range.atMost(3).gap(Range.atMost(2));
+```
+```shell
+java.lang.AssertionError
+	at com.google.common.collect.Cut$BelowAll.describeAsUpperBound(Cut.java:165)
+	at com.google.common.collect.Range.toString(Range.java:677)
+	at com.google.common.collect.Range.<init>(Range.java:358)
+	at com.google.common.collect.Range.create(Range.java:156)
+	at com.google.common.collect.Range.gap(Range.java:583)
+```
+
+so, I added the ranges check for the `gap`.
+PTAL @cpovirk . =||= Sounds reasonable, thanks. Would you also:
+
+- Add your tests for the AssertionError cases
+
+- include the 2 input ranges in the exception message =||= @cpovirk  I added the test and the invalid ranges in the IAE message. 
+ =||= Thanks. I got another set of eyes on this, and hopefully we'll get it submitted internally and merged out soon. =||= ,0
+4029,4004,AssertionError from Range.gap,@zhanhb [reports](https://github.com/google/guava/commit/a9dd7098f741d652fe2daf8193b831737dc36aa0#commitcomment-41940819):
+
+```java
+Range.atLeast(1).gap(Range.atLeast(2));
+```
+```txt
+java.lang.AssertionError
+	at com.google.common.collect.Cut$AboveAll.describeAsLowerBound(Cut.java:259)
+	at com.google.common.collect.Range.toString(Range.java:674)
+	at com.google.common.collect.Range.<init>(Range.java:357)
+	at com.google.common.collect.Range.create(Range.java:155)
+	at com.google.common.collect.Range.gap(Range.java:582)
+```,nan,0
+4029,4021,Fixed Typos,I found multiple typos in comments and class names, so I fixed it.,According to dictionary.com, it is in fact "interruptible," not "interruptable." =||= Thanks, I changed it back. =||= ,0
+4030,4019,Issue #4002 UnsupportedOperationException when modify TreeRangeSet.subRangeSet(Range).,The same implementation as `remove`.,nan,0
+4030,4002,UnsupportedOperationException when modify TreeRangeSet.subRangeSet(Range),Unable to modify subRangeSet returned by TreeRangeSet.subRangeSet(Range).
+IMO, it should be availiable to do so as specified in the document.
+
+```java
+import com.google.common.collect.Range;
+import com.google.common.collect.TreeRangeSet;
+import org.junit.jupiter.api.Test;
+
+@SuppressWarnings("UnstableApiUsage")
+public class SubRangeSetTest {
+
+    @Test
+    public void testAdd() {
+        TreeRangeSet<Integer> set = TreeRangeSet.create();
+        Range<Integer> range = Range.closedOpen(0, 5);
+        set.subRangeSet(range).add(range);
+    }
+
+    @Test
+    public void testReplaceAdd() {
+        TreeRangeSet<Integer> set = TreeRangeSet.create();
+        Range<Integer> range = Range.closedOpen(0, 5);
+        set.add(range);
+        set.subRangeSet(range).add(range);
+    }
+}
+```
+
+```
+java.lang.UnsupportedOperationException
+	at java.base/java.util.AbstractMap.put(AbstractMap.java:209)
+	at com.google.common.collect.TreeRangeSet.replaceRangeWithSameLowerBound(TreeRangeSet.java:266)
+	at com.google.common.collect.TreeRangeSet.add(TreeRangeSet.java:216)
+	at com.google.common.collect.TreeRangeSet$SubRangeSet.add(TreeRangeSet.java:894)
+	at SubRangeSetTest.testAdd(SubRangeSetTest.java:12)
+```
+```
+java.lang.UnsupportedOperationException
+	at com.google.common.collect.UnmodifiableIterator.remove(UnmodifiableIterator.java:46)
+	at com.google.common.collect.Iterators.clear(Iterators.java:985)
+	at com.google.common.collect.Maps$IteratorBasedAbstractMap.clear(Maps.java:3562)
+	at com.google.common.collect.TreeRangeSet.add(TreeRangeSet.java:214)
+	at com.google.common.collect.TreeRangeSet$SubRangeSet.add(TreeRangeSet.java:894)
+	at SubRangeSetTest.testReplaceAdd(SubRangeSetTest.java:20)
+```,Thanks, that sounds like a bug to me, too.
+
+I see a slightly different stack trace (with both guava-29.0-jre.jar and guava-29.0-android.jar), so the exact failure may depend on the Guava version:
+
+```
+# -jre
+Exception in thread "main" java.lang.UnsupportedOperationException
+  at java.base/java.util.AbstractMap.put(AbstractMap.java:209)
+  at com.google.common.collect.TreeRangeSet.replaceRangeWithSameLowerBound(TreeRangeSet.java:266)
+  at com.google.common.collect.TreeRangeSet.add(TreeRangeSet.java:216)
+  at com.google.common.collect.TreeRangeSet$SubRangeSet.add(TreeRangeSet.java:894)
+  at Issue4002.main(Issue4002.java:8)
+
+# -android
+Exception in thread "main" java.lang.UnsupportedOperationException
+  at java.base/java.util.AbstractMap.put(AbstractMap.java:209)
+  at com.google.common.collect.TreeRangeSet.replaceRangeWithSameLowerBound(TreeRangeSet.java:268)
+  at com.google.common.collect.TreeRangeSet.add(TreeRangeSet.java:218)
+  at com.google.common.collect.TreeRangeSet$SubRangeSet.add(TreeRangeSet.java:899)
+  at Issue4002.main(Issue4002.java:8)
+```
+
+Sorry for the trouble. We will have a look. =||= Presumably because we don't implement `put` in `SubRangeSetRangesByLowerBound`. =||= This is a stacktrace of ~~subRangeSet.remove~~ replace existing range. It should meet the same stacktrace(UnsupportedOperationException) ~~over all guava versions~~ since 18.0. And StackOverflowerError from 14.0 to 17.0. =||= Oh, thanks, I pasted from the email (which has the original text from your post). It's good to know that both add _and_ remove fail. =||= The codes and stacktraces updated. =||= `subRangeSet` was part of the initial `RangeSet` in Guava 14.0. Calling `add` against that version, I get a `StackOverflowError`... :) I haven't checked whether `add` worked in some intermediate version.
+
+`remove` at least is a successful no-op under 14.0. So that's a definite regression. =||= Oh, sorry, you're saying that `remove` is OK but that `add` is broken -- both in the case in which `add` has to remove an existing range and in the case in which it doesn't. =||= (`add` is broken at least as far back as Guava 20.0.) =||= ,0
+5252,4036,Remove unnecessary parens,This PR is related to PR #3191.
+
+In #3191, unnecessary parens in `PairedStats` were omitted, but its similar class, `Stats` was not touched.
+I found unnecessary parens in the class, so removed.,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F4036) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= ,0
+5268,5266,Clarified HashMultimap javadoc about concurrency,Fixes #3682,nan,0
+5268,3682,MultiMap concurrency unclear Javadoc,From https://github.com/google/guava/issues/135#issuecomment-472966705
+
+The [javadoc for HashMultimap](https://google.github.io/guava/releases/27.0-jre/api/docs/com/google/common/collect/HashMultimap.html)  states:  
+
+> This class is not threadsafe when any concurrent operations update the multimap. Concurrent read operations will work correctly.
+
+Does this mean that it is thread-safe if only one thread writes to the map (while any number of threads may read simultaniously) ? The javadoc for [other MultiMap implementations](https://google.github.io/guava/releases/27.0-jre/api/docs/com/google/common/collect/ArrayListMultimap.html) is the same and i think it should be clearer on that.,This text indeed should be revised.  The only way that concurrent reads are safe is if the last write "happens-before" every one of them.  You can't have one thread continuing to write. =||= ,0
+5268,5265,Removed all references to now useless workaround,Fixes #3679,nan,0
+5275,5272,Clarify how to use `IteratorTester`,Partially addresses #5254.,nan,0
+5277,5276,Fix example in documentation for `IteratorTester`,Partially addresses #5254 (and fixes my own mistake in https://github.com/google/guava/commit/9f03c474d92e724d2193ab64b5cfbd2b232a715e).,nan,0
+5278,5250,google#2058 Add documentation on what happens when exception thrown b…,…y Callback,nan,0
+5286,5281,Update IteratorTester example with a greater "steps" value,Builds upon my earlier work in https://github.com/google/guava/pull/5272 and https://github.com/google/guava/pull/5276, whilst also addressing https://github.com/google/guava/issues/5254 a bit.,nan,0
+5307,5298,Verify maximumWeight before setting,The maximumWeight builder method is the only method that does the argument verification before the assignment.
+It looks like a typo, and does not affect anyone in practice, but it is still better to have the implementation uniform.,nan,0
+5307,5306,Add `X-Request-ID` to `HttpHeaders`,nan,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F5306) for more info**.
+
+<!-- need_sender_cla --> =||= @googlebot I signed it! =||= ,0
+5352,3945,parent.relativePath'  points at com.google.guava:guava-parent instead of org.sonatype.oss:oss-parent,[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.google.guava:guava-bom:pom:HEAD-jre-SNAPSHOT
+[WARNING] 'parent.relativePath' of POM com.google.guava:guava-bom:HEAD-jre-SNAPSHOT (/home/elharo/guava/guava-bom/pom.xml) points at com.google.guava:guava-parent instead of org.sonatype.oss:oss-parent, please verify your project structure @ line 14, column 11
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] ,nan,0
+5352,5349,#3945 - Fixed parent.relativePath issue in guava-bom,Fixed : #3945,nan,0
+5406,5348,Fix compatibility between the cache compute methods and a load,The `asMap().compute` implementation did not take into account that the present value may be loading. A load does not block other writes to that entry and takes into account that it may be clobbered, causing it to automatically discard itself. This is a known design choice that breaks linearizability assumptions (#1881). The compute should check if a load is in progress and call the appropriate internal removal method.
+
+Because a zombie entry remained in the cache and still is marked as loading, the loader could discover entry and try to wait for it to materialize. When the computation is a removal, indicated by a null value, the loader would see this as the zombie's result. Since a cache loader may not return null it would throw an exception to indicate a user bug.
+
+A new `ComputingValueReference` resolves both issues by indicating that the load has completed. The compute's `removeEntry` will then actually remove this entry and the loader will not wait on the zombie. Instead if it observes the entry, it will neither receive a non-null value or wait for it to load, but rather try to load anew under the lock. This piggybacks on the reference collection support where an entry is present but its value was garbage collected, causing the load to proceed. By the time the lock is obtained the compute method's entry was removed and the load proceeds as normal (so no unnecessary notification is produced).
+
+fixes #5342
+fixes #2827
+resolves underlying cause of #2108,nan,0
+5406,5342,Cache.asMap() interface makes it possible to map NULL values into the cache,Through the `asMap()` interface it is possible in certain situations to partially map NULL values into the `Cache` which results in an unpredictable state. When using `ConcurrentMap.compute` and `ConcurrentMap.computeIfPresent` it possible to remap a previous value to null rather than removing it, which I think would be the expected behaviour here. 
+
+Attached [CacheNullValueTest.java.zip](https://github.com/google/guava/files/5636058/CacheNullValueTest.java.zip) contains test cases that reproduces this problem, tested on 30.0-jre
+
+,The test case is confusing because it passes due to asserting the invalid behavior. I suspect that the Guava team would prefer to have a failing test to iterate against.
+
+The compute methods are not a good fit with Guava's design, so the implementation has quirks and performance issues. I don't think those methods are commonly used, so they are likely not fully robust.
+
+Can you try [Caffeine](https://github.com/ben-manes/caffeine)? I believe my migration of your test passes, but flipping assertions leads me a little unsure. The builder is almost identical but since async is enabled by default, you'd need to specify `Caffeine.executor(Runnable::run)` to mirror Guava. =||= I took a quick look and proposed a fix in #5348. I haven't been a contributor in many years and my familiarity with the cache internals is hazy, but I don't think anyone still active on the Guava team is any better off than I am. That PR seems to address the problem, but alas I can't be certain there are not edge cases that I missed. =||= ,0
+5406,2827,Cache load + compute methods are incompatible,A `Map.compute` may return `null` to indicate the entry should be removed if present. The `valueReference` is stored within the cache, allowing a subsequent `LoadingCache.get` to wait on it. This results in `LocalCache.waitForLoadingValue` to throw an `InvalidCacheLoadException` with the message `CacheLoader returned null for key`. Since the cache loader was not invoked, this message is incorrect and means the two methods cannot be used together, concurrently.
+
+The user expectation would be that the load proceeds by retrying the load if `null` from a computation (but fails if from a cache loader). That may require using a sentinel value.
+
+You can checkout this [commit](https://github.com/ben-manes/caffeine/commit/764df3aac6aacb78a4fc5a2134f911fd60dfa9f9) and run `MultiThreadedTest` using `./gradlew slowGuavaTest`. 
+
+```java
+Expected: is an empty collection
+     but: <[Failed: key 15 on operation com.github.benmanes.caffeine.cache.MultiThreadedTest$$Lambda$3/841283083@91eee99
+com.google.common.cache.CacheLoader$InvalidCacheLoadException: CacheLoader returned null for key 15.
+	at com.google.common.cache.LocalCache$Segment.waitForLoadingValue(LocalCache.java:2321)
+	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2206)
+	at com.google.common.cache.LocalCache.get(LocalCache.java:4147)
+	at com.google.common.cache.LocalCache.getAll(LocalCache.java:4210)
+	at com.google.common.cache.LocalCache$LocalLoadingCache.getAll(LocalCache.java:5154)
+	at com.github.benmanes.caffeine.cache.testing.GuavaCacheFromContext$GuavaLoadingCache.getAll(GuavaCacheFromContext.java:422)
+	at com.github.benmanes.caffeine.cache.MultiThreadedTest.lambda$1(MultiThreadedTest.java:101)
+	at com.github.benmanes.caffeine.testing.Threads$Thrasher.run(Threads.java:149),It sounds like this shouldn't be too difficult to deal with just by switching to a sentinel value, but if someone wants to send a pull request it'd probably get done more quickly.  Otherwise I'll try to take a whack at this...soon-ish. =||= Actually there are simpler fixes. A sentinel value would be invasive by requiring all read/write methods to check and translate, and computers to allocate a function to translate a null to the sentinel.
+
+- Add a `ComputingValueReference` and have an instanceOf check in `waitForLoadingValue` when a null was detected. This class could extend `LoadingValueReference` as its merely tagging the behavioral difference.
+- Add a decorator to the user's `CacheLoader` and move the assertion there. (This would also be needed in `get(key, callable)`).
+
+All would require the cache loading calls to handle a retry loop. These two (or perhaps a similar variant) would be easy to implement and isolates the changes. We could also run a snapshot through the test suites to verify. =||= @lowasser This is fixed in PR #5348 as part of fixing ##5342. =||= ,0
+5406,2108,Cache.asMap().size() may return a negative value,My multithreaded thrashing tests failed with Guava due to `size()` returning a negative value. The size is used for verifying that the `toArray()` methods are threadsafe (this was a common bug until JDK6 rewrote AbstractCollection's to be tolerant to races). The lines in question are,
+
+``` java
+(cache, key) -> cache.asMap().keySet().toArray(new Object[cache.asMap().size()]),
+(cache, key) -> cache.asMap().values().toArray(new Object[cache.asMap().size()]),
+(cache, key) -> cache.asMap().entrySet().toArray(new Entry[cache.asMap().size()]),
+```
+
+This results in a `NegativeArraySizeException` unless worked around using `Math.max(0, cache.asMap().size())` which is now done in the guava fixture. I'm not sure why this occurs, and only happened after tweaking some JVM args. Regardless this failure was reproducible and is simple to fix.
+
+```
+java.lang.NegativeArraySizeException
+at com.github.benmanes.caffeine.cache.MultiThreadedTest.lambda$new$280(MultiThreadedTest.java:142)
+at com.github.benmanes.caffeine.cache.MultiThreadedTest$$Lambda$29/584234975.accept(Unknown Source)
+at com.github.benmanes.caffeine.testing.Threads$Thrasher.run(Threads.java:149)
+at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+at com.github.benmanes.caffeine.testing.ConcurrentTestHarness.lambda$timeTasks$344(ConcurrentTestHarness.java:100)
+at com.github.benmanes.caffeine.testing.ConcurrentTestHarness$$Lambda$61/1027825150.run(Unknown Source)
+at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+at java.lang.Thread.run(Thread.java:745)
+```,Are your caches _really_ big? I see we do some summing up of segment sizes in a loop - maybe we are overflowing Integer.MAX_VALUE?
+ =||= The saturated cast should handle that. Both ConcurrentHashMap
+implementations do a negative check, so it sounds like an expected race
+even though I don't know why it might occur.
+On Jul 15, 2015 7:45 AM, "Kurt Alfred Kluever" notifications@github.com
+wrote:
+
+> Are your caches _really_ big? I see we do some summing up of segment
+> sizes in a loop - maybe we are overflowing Integer.MAX_VALUE?
+> 
+> —
+> Reply to this email directly or view it on GitHub
+> https://github.com/google/guava/issues/2108#issuecomment-121638255.
+ =||= "which is now done in the guava fixture" What does this mean?  It's not 100% clear what fix you have in mind.  Is it just a simple Math.max in the size method?
+ =||= Yes, its that simple. In `longSize()` use `return Math.max(0, sum)` which will cover all of the size() methods. This is essentially what I do in my [fixture](https://github.com/ben-manes/caffeine/blob/master/caffeine/src/test/java/com/github/benmanes/caffeine/cache/testing/GuavaCacheFromContext.java#L207), which is used to run all my tests against both Caffeine and Guava implementations to find bugs / check compatibility.
+
+Again I'm not sure why this occurs from reading the code, but I was able to reproduce the exception (its racy so takes a few tries). The fix is safe and non-invasive, so easier to resolve it there than dig into the race causing it.
+ =||= Is it enough to max(0, entireSize) or should it be done to each individual segment count?
+ =||= Either is fine with me. Since the size is an estimate, rather than exact, I'm not overly concerned either way. The `long` avoids overflow so your idea would be for better precision.
+ =||= Patch submitted internally; that should make it out into the next RC.
+ =||= ,0
+5415,3974,Removed some redundant 'else's using early return,nan,
+Thanks for your pull request. It looks like this may be your first contribution to a Google open source project (if not, look below for help). Before we can look at your pull request, you'll need to sign a Contributor License Agreement (CLA).
+
+:memo: **Please visit <https://cla.developers.google.com/> to sign.**
+
+Once you've signed (or fixed any issues), please reply here with `@googlebot I signed it!` and we'll verify it.
+
+----
+
+#### What to do if you already signed the CLA
+
+##### Individual signers
+
+*   It's possible we don't have your GitHub username or you're using a different email address on your commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+
+##### Corporate signers
+
+*   Your company has a Point of Contact who decides which employees are authorized to participate. Ask your POC to be added to the group of authorized contributors. If you don't know who your Point of Contact is, direct the Google project maintainer to [go/cla#troubleshoot](http://go/cla#troubleshoot) ([Public version](https://opensource.google/docs/cla/#troubleshoot)).
+*   The email used to register you as an authorized contributor must be the email used for the Git commit. Check [your existing CLA data](https://cla.developers.google.com/clas) and verify that your [email is set on your git commits](https://help.github.com/articles/setting-your-email-in-git/).
+*   The email used to register you as an authorized contributor must also be [attached to your GitHub account](https://github.com/settings/emails).
+		
+
+ℹ️ **Googlers: [Go here](https://goto.google.com/prinfo/https%3A%2F%2Fgithub.com%2Fgoogle%2Fguava%2Fpull%2F3974) for more info**.
+
+<!-- need_sender_cla --> =||= Hi @pradipta. Many of these look good, and we'll push out a commit that incorporates them, attributed to you, soon. We're not taking the ones where the else branch is of roughly the same size as the if branch, because those seem to have more parallelism. =||= ,0
+5497,5488,Bump actions/cache from v2.1.4 to v2.1.5,Bumps [actions/cache](https://github.com/actions/cache) from v2.1.4 to v2.1.5.
+<details>
+<summary>Release notes</summary>
+<p><em>Sourced from <a href="https://github.com/actions/cache/releases">actions/cache's releases</a>.</em></p>
+<blockquote>
+<h2>v2.1.5</h2>
+<ul>
+<li>Fix permissions error seen when extracting caches with GNU tar that were previously created using BSD tar (<a href="https://github-redirect.dependabot.com/actions/cache/issues/527">actions/cache#527</a>)</li>
+</ul>
+</blockquote>
+</details>
+<details>
+<summary>Commits</summary>
+<ul>
+<li><a href="https://github.com/actions/cache/commit/1a9e2138d905efd099035b49d8b7a3888c653ca8"><code>1a9e213</code></a> Update cache module to v1.0.7 (<a href="https://github-redirect.dependabot.com/actions/cache/issues/562">#562</a>)</li>
+<li><a href="https://github.com/actions/cache/commit/981fa981ed950efef5277587ee4ba0eead30cadf"><code>981fa98</code></a> Merge pull request <a href="https://github-redirect.dependabot.com/actions/cache/issues/469">#469</a> from ericmj/patch-1</li>
+<li><a href="https://github.com/actions/cache/commit/4498c5b4d8b0673dbc7d9731bc11d9cc5a2c6087"><code>4498c5b</code></a> Drop the example based on using pip's internals (<a href="https://github-redirect.dependabot.com/actions/cache/issues/519">#519</a>)</li>
+<li><a href="https://github.com/actions/cache/commit/4134e6de47156381d31ff74f8aabf86718858f70"><code>4134e6d</code></a> It is not recommended to cache node_modules (<a href="https://github-redirect.dependabot.com/actions/cache/issues/537">#537</a>)</li>
+<li><a href="https://github.com/actions/cache/commit/62a4d754427893bc6d043c6d4f5486490cab29b6"><code>62a4d75</code></a> Also cache _build for Elixir</li>
+<li>See full diff in <a href="https://github.com/actions/cache/compare/v2.1.4...1a9e2138d905efd099035b49d8b7a3888c653ca8">compare view</a></li>
+</ul>
+</details>
+<br />
+
+
+Dependabot will resolve any conflicts with this PR as long as you don't alter it yourself. You can also trigger a rebase manually by commenting `@dependabot rebase`.
+
+[//]: # (dependabot-automerge-start)
+[//]: # (dependabot-automerge-end)
+
+---
+
+<details>
+<summary>Dependabot commands and options</summary>
+<br />
+
+You can trigger Dependabot actions by commenting on this PR:
+- `@dependabot rebase` will rebase this PR
+- `@dependabot recreate` will recreate this PR, overwriting any edits that have been made to it
+- `@dependabot merge` will merge this PR after your CI passes on it
+- `@dependabot squash and merge` will squash and merge this PR after your CI passes on it
+- `@dependabot cancel merge` will cancel a previously requested merge and block automerging
+- `@dependabot reopen` will reopen this PR if it is closed
+- `@dependabot close` will close this PR and stop Dependabot recreating it. You can achieve the same result by closing it manually
+- `@dependabot ignore this major version` will close this PR and stop Dependabot creating any more for this major version (unless you reopen the PR or upgrade to it yourself)
+- `@dependabot ignore this minor version` will close this PR and stop Dependabot creating any more for this minor version (unless you reopen the PR or upgrade to it yourself)
+- `@dependabot ignore this dependency` will close this PR and stop Dependabot creating any more for this dependency (unless you reopen the PR or upgrade to it yourself)
+
+
+</details>,OK, I won't notify you again about this release, but will get in touch when a new version is available.
+
+If you change your mind, just re-open this PR and I'll resolve any conflicts on it. =||= ,0
